@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+set -e
+
+miseDir() {
+	if [ -n "$MISE_DIR" ]; then
+		echo "$MISE_DIR"
+		return
+	fi
+
+	if [ -n "$MISE_DATA_DIR" ]; then
+		echo "$MISE_DATA_DIR"
+		return
+	fi
+
+	if [ -n "$XDG_DATA_HOME" ]; then
+		echo "$XDG_DATA_HOME/mise"
+		return
+	fi
+
+	echo "$HOME/.local/share/mise"
+}
+
+setupMise() {
+	version="$1"
+	miseBinDir=$(miseDir)/bin
+
+    if [ -n "$version" ]; then
+      url="https://mise.jdx.dev/v${version}/mise-v${version}-$(get_os)-$(get_arch)"
+    else
+      url="https://mise.jdx.dev/mise-latest-$(get_os)-$(get_arch)"
+    fi
+
+	mkdir -p "$miseBinDir"
+	curl -fsSL "$url" -o "$miseBinDir/mise"
+	chmod +x "$miseBinDir/mise"
+	export PATH="$miseBinDir:$PATH"
+}
+
+get_os() {
+  uname -s
+}
+
+get_arch() {
+  uname -m
+}
+
+setToolVersions() {
+	tool_versions="$1"
+    if [ -n "$tool_versions" ]; then
+      echo "$tool_versions"> .tool-versions
+    fi
+}
+
+setMiseToml() {
+	toml="$1"
+	[ "$toml" ] && echo "$toml" >.mise.toml
+}
+
+testMise() {
+	mise --version
+}
+
+miseInstall() {
+	mise install
+}
+
+mise() {
+	echo "Running mise $*"
+	mise "$@"
+}
+
+main() {
+	setToolVersions "$BUILDKITE_PLUGIN_MISE_TOOL_VERSIONS"
+
+    setupMise "$BUILDKITE_PLUGIN_MISE_VERSION"
+
+	# export MISE_TRUSTED_CONFIG_PATHS="$(pwd)"
+	# export MISE_YES=1
+	#export MISE_EXPERIMENTAL=$([ "$(getExperimental)" = true ] && echo 1 || echo 0)
+
+	testMise
+	[ "$INSTALL" = true ] && miseInstall
+}
+
+main
