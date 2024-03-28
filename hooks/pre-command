@@ -38,7 +38,8 @@ setupMise() {
 }
 
 get_os() {
-  uname -s
+  name="$(uname -s)"
+  echo "${name,,}"
 }
 
 get_arch() {
