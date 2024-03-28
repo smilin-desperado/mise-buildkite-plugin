@@ -105,7 +105,7 @@ main() {
 	#export MISE_EXPERIMENTAL=$([ "$(getExperimental)" = true ] && echo 1 || echo 0)
 
 	testMise
-	[ "$INSTALL" = true ] && miseInstall
+	#[ "$INSTALL" = true ] && miseInstall
 }
 
 main
