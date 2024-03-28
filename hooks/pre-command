@@ -25,11 +25,11 @@ setupMise() {
 	version="$1"
 	miseBinDir=$(miseDir)/bin
 
-    if [ -n "$version" ]; then
-      url="https://mise.jdx.dev/v${version}/mise-v${version}-$(get_os)-$(get_arch)"
-    else
-      url="https://mise.jdx.dev/mise-latest-$(get_os)-$(get_arch)"
-    fi
+	if [ -n "$version" ]; then
+		url="https://mise.jdx.dev/v${version}/mise-v${version}-$(get_os)-$(get_arch)"
+	else
+		url="https://mise.jdx.dev/mise-latest-$(get_os)-$(get_arch)"
+	fi
 
 	mkdir -p "$miseBinDir"
 	curl -fsSL "$url" -o "$miseBinDir/mise"
@@ -38,19 +38,43 @@ setupMise() {
 }
 
 get_os() {
-  name="$(uname -s)"
-  echo "${name,,}"
+	os="$(uname -s)"
+	if [ "$os" = Darwin ]; then
+		echo "macos"
+	elif [ "$os" = Linux ]; then
+		echo "linux"
+	else
+		error "unsupported OS: $os"
+	fi
 }
 
 get_arch() {
-  uname -m
+	musl=""
+	if type ldd >/dev/null 2>/dev/null; then
+		libc=$(ldd /bin/ls | grep 'musl' | head -1 | cut -d ' ' -f1)
+		if [ -n "$libc" ]; then
+			musl="-musl"
+		fi
+	fi
+	arch="$(uname -m)"
+	if [ "$arch" = x86_64 ]; then
+		echo "x64$musl"
+	elif [ "$arch" = aarch64 ] || [ "$arch" = arm64 ]; then
+		echo "arm64$musl"
+	elif [ "$arch" = armv6l ]; then
+		echo "armv6$musl"
+	elif [ "$arch" = armv7l ]; then
+		echo "armv7$musl"
+	else
+		error "unsupported architecture: $arch"
+	fi
 }
 
 setToolVersions() {
 	tool_versions="$1"
-    if [ -n "$tool_versions" ]; then
-      echo "$tool_versions"> .tool-versions
-    fi
+	if [ -n "$tool_versions" ]; then
+		echo "$tool_versions" >.tool-versions
+	fi
 }
 
 setMiseToml() {
@@ -74,7 +98,7 @@ mise() {
 main() {
 	setToolVersions "$BUILDKITE_PLUGIN_MISE_TOOL_VERSIONS"
 
-    setupMise "$BUILDKITE_PLUGIN_MISE_VERSION"
+	setupMise "$BUILDKITE_PLUGIN_MISE_VERSION"
 
 	# export MISE_TRUSTED_CONFIG_PATHS="$(pwd)"
 	# export MISE_YES=1
