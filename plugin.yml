@@ -1,0 +1,7 @@
+name: mise
+author: https://tapendium.com
+configuration:
+  properties:
+    debug:
+      type: boolean
+    additionalProperties: true
