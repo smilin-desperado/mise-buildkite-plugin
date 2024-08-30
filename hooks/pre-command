@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-set -ex
+set -eo pipefail
+
+if [[ "${BUILDKITE_PLUGIN_MISE_DEBUG:-false}" =~ (true|on|1) ]]; then
+	echo "~~~ :hammer: Enabling debug mode"
+	set -x
+fi
 
 miseDir() {
 	if [ -n "$MISE_DIR" ]; then
