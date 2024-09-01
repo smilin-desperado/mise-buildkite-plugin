@@ -95,10 +95,10 @@ miseInstall() {
 	mise install
 }
 
-mise() {
-	echo "Running mise $*"
-	mise "$@"
-}
+# mise() {
+# 	echo "Running mise $*"
+# 	mise "$@"
+# }
 
 main() {
 	setToolVersions "$BUILDKITE_PLUGIN_MISE_TOOL_VERSIONS"
