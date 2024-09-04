@@ -95,14 +95,10 @@ miseInstall() {
 	mise install
 }
 
-# mise() {
-# 	echo "Running mise $*"
-# 	mise "$@"
-# }
-
 main() {
 	setToolVersions "$BUILDKITE_PLUGIN_MISE_TOOL_VERSIONS"
 
+    echo "dir: $(miseDir)"
 
     if ! command -v mise &>/dev/null; then
       echo "mise not found. Installing."
