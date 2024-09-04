@@ -103,7 +103,11 @@ miseInstall() {
 main() {
 	setToolVersions "$BUILDKITE_PLUGIN_MISE_TOOL_VERSIONS"
 
-	setupMise "$BUILDKITE_PLUGIN_MISE_VERSION"
+
+    if ! command -v mise &>/dev/null; then
+      echo "mise not found. Installing."
+      setupMise "$BUILDKITE_PLUGIN_MISE_VERSION"
+    fi
 
 	# export MISE_TRUSTED_CONFIG_PATHS="$(pwd)"
 	# export MISE_YES=1
