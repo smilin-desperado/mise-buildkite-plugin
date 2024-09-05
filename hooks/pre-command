@@ -87,16 +87,6 @@ setMiseToml() {
 	[ "$toml" ] && echo "$toml" >.mise.toml
 }
 
-testMise() {
-	mise --version
-}
-
-miseInstall() {
-	mise install
-}
-
-
-
 main() {
 	setToolVersions "$BUILDKITE_PLUGIN_MISE_TOOL_VERSIONS"
 
@@ -111,9 +101,16 @@ main() {
 	# export MISE_YES=1
 	#export MISE_EXPERIMENTAL=$([ "$(getExperimental)" = true ] && echo 1 || echo 0)
 
+    # Add shims to path
     export PATH="$(miseDir)/shims:$PATH"
-	testMise
-	#[ "$INSTALL" = true ] && miseInstall
+    mise --version
+
+    if [ ! -f .tool-versions ] && [ ! -f .mise.toml ]; then
+      echo "No .tool-versions or .mise.toml file found. Aborting"
+      exit 1
+    fi
+
+    mise install
 }
 
 main
