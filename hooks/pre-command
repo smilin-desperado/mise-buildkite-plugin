@@ -95,6 +95,8 @@ miseInstall() {
 	mise install
 }
 
+
+
 main() {
 	setToolVersions "$BUILDKITE_PLUGIN_MISE_TOOL_VERSIONS"
 
@@ -109,6 +111,7 @@ main() {
 	# export MISE_YES=1
 	#export MISE_EXPERIMENTAL=$([ "$(getExperimental)" = true ] && echo 1 || echo 0)
 
+    export PATH="$(miseDir)/shims:$PATH"
 	testMise
 	#[ "$INSTALL" = true ] && miseInstall
 }
